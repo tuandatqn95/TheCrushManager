@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#ffffff"
+    tools:context="com.crush.thecrushmanager.activity.CategoryDetailActivity">
+
+
+
+
+    <!-- Ratings -->
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recycler_toppings"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/category_top_card"
+        android:background="@android:color/transparent"
+        android:clipToPadding="false"
+        android:paddingBottom="6dp"
+        android:paddingTop="6dp"
+
+        android:visibility="visible"
+        tools:listitem="@layout/item_topping_layout" />
+
+
+</RelativeLayout>

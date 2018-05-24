@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?attr/selectableItemBackground"
+    android:orientation="vertical"
+    android:padding="8dp">
+
+    <ImageView
+        android:id="@+id/drink_item_image"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:background="@color/fui_transparent"
+        android:scaleType="fitCenter"
+        android:src="@drawable/milktea_thumbail" />
+
+    <TextView
+        android:id="@+id/drink_item_name"
+        style="@style/AppTheme.Subheader"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/drink_item_image"
+        android:layout_marginBottom="4dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="-2dp"
+
+        android:layout_toRightOf="@+id/drink_item_image"
+        android:ellipsize="end"
+        android:maxLines="1"
+        tools:text="Foo's Bar" />
+
+    <me.zhanghai.android.materialratingbar.MaterialRatingBar
+        android:id="@+id/drink_item_rating"
+        style="@style/Widget.MaterialRatingBar.RatingBar.Indicator.Small"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/drink_item_name"
+        android:layout_below="@+id/drink_item_name"
+        android:layout_marginBottom="4dp" />
+    <TextView
+        android:id="@+id/drink_item_price"
+        style="@style/AppTheme.Body1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/drink_item_name"
+        android:layout_below="@+id/drink_item_rating"
+        android:textColor="@color/greySecondary"
+        tools:text="San Francisco" />
+
+</RelativeLayout>

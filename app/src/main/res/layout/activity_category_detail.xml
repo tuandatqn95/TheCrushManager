@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#ffffff"
+    tools:context="com.crush.thecrushmanager.activity.CategoryDetailActivity">
+
+    <RelativeLayout
+        android:id="@+id/category_top_card"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:elevation="4dp">
+
+        <ImageView
+            android:id="@+id/category_image"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:alpha="1.0"
+            android:scaleType="centerCrop"
+            tools:src="@drawable/milktea1" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:background="@drawable/gradient_up" />
+
+        <!-- Back button -->
+
+        <TextView
+            android:id="@+id/category_name"
+            style="@style/AppTheme.Title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/category_image"
+            android:layout_marginBottom="16dp"
+            android:layout_marginLeft="24dp"
+            android:textColor="@android:color/white"
+            android:textStyle="bold"
+            tools:text="Category Name" />
+
+    </RelativeLayout>
+
+
+    <!-- Ratings -->
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recycler_drinks"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/category_top_card"
+        android:background="@android:color/transparent"
+        android:clipToPadding="false"
+        android:paddingBottom="16dp"
+        android:paddingTop="16dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginLeft ="10dp"
+        android:visibility="visible"
+        tools:listitem="@layout/item_drink_layout" />
+
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_add_drink_dialog"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/category_top_card"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="-28dp"
+        android:layout_marginRight="16dp"
+        app:srcCompat="@drawable/ic_add_white_24px" />
+
+    <ImageView
+        android:id="@+id/category_button_back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignStart="@+id/recycler_drinks"
+        android:layout_marginStart="14dp"
+        android:layout_marginTop="13dp"
+        android:background="?attr/selectableItemBackground"
+        app:srcCompat="@drawable/ic_close_white_24px" />
+</RelativeLayout>

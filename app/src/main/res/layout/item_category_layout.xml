@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?attr/selectableItemBackground"
+    android:orientation="vertical"
+    android:paddingBottom="4dp"
+    android:paddingLeft="8dp"
+    android:paddingRight="8dp"
+    android:paddingTop="4dp">
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/category_item"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp">
+
+            <ImageView
+                android:id="@+id/category_item_image"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:background="@color/fui_transparent"
+                android:scaleType="centerCrop"
+                android:src="@drawable/milktea_thumbail" />
+
+
+            <TextView
+                android:id="@+id/category_item_name"
+                style="@style/AppTheme.Subheader"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_toRightOf="@id/category_item_image"
+                android:layout_weight="1"
+                android:textSize="18dp"
+                tools:text="Category Name" />
+
+            <TextView
+                android:id="@+id/quantity_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@+id/category_item_image"
+                android:layout_marginLeft="16dp"
+                android:layout_toRightOf="@id/category_item_image"
+                tools:text="Quantity" />
+
+            <ImageView
+                android:id="@+id/category_item_delete"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:padding="18dp"
+                android:layout_alignParentRight="true"
+                android:src="@drawable/ic_recyclebin" />
+        </RelativeLayout>
+    </android.support.v7.widget.CardView>
+
+</LinearLayout>

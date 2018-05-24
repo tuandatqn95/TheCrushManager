@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="16dp">
+
+    <ImageView
+        android:id="@+id/order_item_image"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:background="@android:drawable/dialog_holo_light_frame"
+        android:src="@drawable/ic_menu_customer" />
+
+    <TextView
+        android:id="@+id/order_item_customer_name"
+        style="@style/AppTheme.Subheader"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_toRightOf="@+id/order_item_image"
+        tools:text="Customer Name" />
+
+    <TextView
+        android:id="@+id/order_item_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/order_item_image"
+        android:layout_marginLeft="16dp"
+        android:layout_toRightOf="@id/order_item_image"
+        android:textColor="#b33c00"
+        tools:text="Last modified" />
+
+    <TextView
+        android:id="@+id/order_item_price"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        tools:text="50.000" />
+
+    <TextView
+        android:id="@+id/order_item_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/order_item_image"
+        android:layout_alignParentEnd="true"
+        android:background="#ff6b2b"
+        android:paddingHorizontal="10dp"
+        android:paddingVertical="3dp"
+        android:textColor="@android:color/white"
+        tools:text="Đã đặt hàng" />
+</RelativeLayout>
