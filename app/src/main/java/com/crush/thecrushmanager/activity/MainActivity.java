@@ -18,6 +18,7 @@ import com.crush.thecrushmanager.R;
 import com.crush.thecrushmanager.fragment.DashboardFragment;
 import com.crush.thecrushmanager.fragment.DrinkFragment;
 import com.crush.thecrushmanager.fragment.OrderFragment;
+import com.crush.thecrushmanager.fragment.SettingFragment;
 import com.crush.thecrushmanager.fragment.ToppingFragment;
 import com.crush.thecrushmanager.viewmodel.MainActivityViewModel;
 import com.firebase.ui.auth.AuthUI;
@@ -78,7 +79,7 @@ public class MainActivity extends AppCompatActivity
         // Sign in with FirebaseUI
         Intent intent = AuthUI.getInstance().createSignInIntentBuilder()
                 .setAvailableProviders(Collections.singletonList(
-                        new AuthUI.IdpConfig.EmailBuilder().build()))
+                        new AuthUI.IdpConfig.PhoneBuilder().build()))
                 .setIsSmartLockEnabled(false)
                 .build();
 
@@ -143,7 +144,9 @@ public class MainActivity extends AppCompatActivity
             case R.id.nav_topping:
                 fragment = new ToppingFragment();
                 break;
-
+            case R.id.nav_setting:
+                fragment = new SettingFragment();
+                break;
             default:
                 fragment = new DashboardFragment();
                 break;

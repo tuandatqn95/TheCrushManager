@@ -13,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:hint="Tên Topping"
+        android:hint="Name"
         android:maxLines="1" />
 
     <EditText
@@ -22,7 +22,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:digits="0123456789"
-        android:hint="Giá Topping"
+        android:hint="Price"
         android:inputType="numberDecimal"
         android:maxLines="1" />
 
@@ -35,7 +35,7 @@
         android:background="@android:drawable/dialog_holo_light_frame"
         android:padding="10dp"
         android:scaleType="fitCenter"
-        android:src="@drawable/topping_thumbail" />
+        android:src="@drawable/default_topping" />
 
     <Button
         android:id="@+id/topping_form_choose_btn"

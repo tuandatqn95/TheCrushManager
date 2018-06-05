@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    tools:context=".fragment.SettingFragment">
+
+    <RelativeLayout
+        android:id="@+id/setting_header"
+        android:layout_width="match_parent"
+        android:layout_height="180dp"
+        android:background="@color/colorPrimary">
+
+        <ImageView
+            android:id="@+id/setting_avatar"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_margin="20dp" />
+
+        <TextView
+            android:id="@+id/setting_username"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/setting_avatar"
+            android:hint="User's Name"
+            android:textColor="@android:color/white" />
+
+    </RelativeLayout>
+
+    <!-- <ListView
+         android:id="@+id/setting_listview"
+         android:layout_width="match_parent"
+         android:layout_height="wrap_content"
+         android:layout_above="@+id/app_version"
+         android:layout_below="@id/setting_header"></ListView>-->
+    <Button
+        android:id="@+id/logout_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/app_version"
+        android:layout_marginBottom="10dp"
+        android:text="Logout"></Button>
+
+    <TextView
+        android:id="@+id/app_version"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+
+        android:gravity="center"
+        android:text="@string/current_version"
+        android:textColor="@android:color/black" />
+</RelativeLayout>

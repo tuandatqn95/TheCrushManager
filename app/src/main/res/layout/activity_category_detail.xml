@@ -49,12 +49,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/category_top_card"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
         android:background="@android:color/transparent"
         android:clipToPadding="false"
         android:paddingBottom="16dp"
         android:paddingTop="16dp"
-        android:layout_marginRight="10dp"
-        android:layout_marginLeft ="10dp"
         android:visibility="visible"
         tools:listitem="@layout/item_drink_layout" />
 
@@ -74,9 +74,20 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_alignStart="@+id/recycler_drinks"
-        android:layout_marginStart="14dp"
-        android:layout_marginTop="13dp"
+        android:layout_marginLeft="14dp"
+        android:layout_marginTop="14dp"
         android:background="?attr/selectableItemBackground"
         app:srcCompat="@drawable/ic_close_white_24px" />
+
+    <ImageView
+        android:id="@+id/category_button_edit"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginRight="14dp"
+        android:layout_marginTop="14dp"
+        android:background="?attr/selectableItemBackground"
+        app:srcCompat="@drawable/ic_edit" />
+
 </RelativeLayout>

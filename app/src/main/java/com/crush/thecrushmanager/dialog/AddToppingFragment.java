@@ -2,17 +2,27 @@ package com.crush.thecrushmanager.dialog;
 
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.crush.thecrushmanager.R;
 import com.crush.thecrushmanager.model.Topping;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Transaction;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -22,12 +32,6 @@ public class AddToppingFragment extends AddDialogFragment {
 
     private static final String TAG = "AddToppingFragment";
 
-    public interface OnSavingListener {
-        void OnAddTopping(Topping topping);
-        void OnUpdateTopping(DocumentReference reference, Topping topping);
-    }
-
-    private OnSavingListener mListener;
 
     @BindView(R.id.topping_form_name)
     TextView toppingName;
@@ -37,6 +41,7 @@ public class AddToppingFragment extends AddDialogFragment {
 
     @BindView(R.id.topping_form_image)
     ImageView toppingImage;
+    private FirebaseFirestore mFirestore;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -44,7 +49,7 @@ public class AddToppingFragment extends AddDialogFragment {
         View rootView = inflater.inflate(R.layout.fragment_add_topping, container, false);
         ButterKnife.bind(this, rootView);
 
-        mListener = (OnSavingListener) getTargetFragment();
+        mFirestore = FirebaseFirestore.getInstance();
 
         Bundle args = getArguments();
         if (args != null) {
@@ -86,7 +91,6 @@ public class AddToppingFragment extends AddDialogFragment {
     }
 
 
-
     @OnClick(R.id.topping_form_choose_btn)
     void onToppingChooseImage(View view) {
         launchCamera();
@@ -100,21 +104,63 @@ public class AddToppingFragment extends AddDialogFragment {
 
     @OnClick(R.id.topping_form_button)
     void onToppingFormSubmit(View view) {
-
-        Topping topping = new Topping(toppingName.getText().toString(), Long.valueOf(toppingPrice.getText().toString()), mImageURL.toString());
+        if (TextUtils.isEmpty(toppingName.getText().toString())) {
+            Toast.makeText(getActivity(), "Please fill Topping's name!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        Topping topping = new Topping(toppingName.getText().toString(), Long.valueOf("0" + toppingPrice.getText()), mImageURL + "");
         switch (mAction) {
             case ADD:
+                OnSaveTopping(topping, null);
 
-                if (mListener != null)
-                    mListener.OnAddTopping(topping);
                 break;
             case UPDATE:
-                if (mListener != null)
-                    mListener.OnUpdateTopping(mSnapshot.getReference(), topping);
+                OnSaveTopping(topping, mSnapshot.getReference());
+
                 break;
         }
         dismiss();
     }
+
+    private Task<Void> saveTopping(final Topping topping, final DocumentReference ref) {
+        final DocumentReference toppingRef;
+        if (ref == null)
+            toppingRef = mFirestore.collection("toppings").document();
+        else
+            toppingRef = ref;
+
+        // In a transaction, add the new rating and update the aggregate totals
+        return mFirestore.runTransaction(new Transaction.Function<Void>() {
+            @Override
+            public Void apply(Transaction transaction) throws FirebaseFirestoreException {
+
+                // Commit to Firestore
+                transaction.set(toppingRef, topping);
+                return null;
+            }
+        });
+    }
+
+
+    public void OnSaveTopping(Topping topping, DocumentReference reference) {
+
+        saveTopping(topping, reference).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Log.d(TAG, "Topping added");
+
+
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.w(TAG, "Add topping failed", e);
+
+
+            }
+        });
+    }
+
 
     @Override
     protected void loadImage() {

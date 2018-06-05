@@ -7,10 +7,6 @@
     android:background="#ffffff"
     tools:context="com.crush.thecrushmanager.activity.CategoryDetailActivity">
 
-
-
-
-    <!-- Ratings -->
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recycler_toppings"
         android:layout_width="match_parent"
@@ -20,9 +16,17 @@
         android:clipToPadding="false"
         android:paddingBottom="6dp"
         android:paddingTop="6dp"
-
         android:visibility="visible"
         tools:listitem="@layout/item_topping_layout" />
 
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_add_topping_dialog"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="16dp"
+        android:layout_marginRight="16dp"
+        app:srcCompat="@drawable/ic_add_white_24px" />
 
 </RelativeLayout>

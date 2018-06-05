@@ -37,11 +37,12 @@ import com.google.firebase.firestore.Transaction;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class DrinkFragment extends Fragment implements CategoryAdapter.OnCategorySelectedListener, AddCategoryFragment.OnSavingListener {
+public class DrinkFragment extends Fragment implements CategoryAdapter.OnCategorySelectedListener {
 
     private static final String TAG = "DrinkFragment";
     private static final int REQUEST_CODE = 1;
@@ -67,7 +68,7 @@ public class DrinkFragment extends Fragment implements CategoryAdapter.OnCategor
         final View rootView = inflater.inflate(R.layout.fragment_drink, container, false);
         ButterKnife.bind(this, rootView);
 
-        setHasOptionsMenu(true);
+
 
         FirebaseFirestore.setLoggingEnabled(true);
 
@@ -127,113 +128,10 @@ public class DrinkFragment extends Fragment implements CategoryAdapter.OnCategor
 
     }
 
-
-    @Override
-    public void OnDeleting(DocumentSnapshot snapshot) {
-        AlertDialog diaBox = ConfirmDeleteAction(snapshot);
-        diaBox.show();
+    @OnClick(R.id.fab_add_category_dialog)
+    public void onAddCategory(View view){
+        addFragment.setTargetFragment(this, REQUEST_CODE);
+        addFragment.show(getFragmentManager(), AddCategoryFragment.TAG);
     }
 
-    private AlertDialog ConfirmDeleteAction(final DocumentSnapshot snapshot) {
-        AlertDialog myDeleteDialogBox = new AlertDialog.Builder(this.getContext())
-                //set message, title, and icon
-                .setTitle("Delete")
-                .setMessage("Bạn có chắc chắn xóa " + snapshot.get(Category.KEY_CATEGORY_NAME) + " không?")
-                .setIcon(R.drawable.ic_recyclebin)
-
-                .setPositiveButton("Xóa", new DialogInterface.OnClickListener() {
-
-                    public void onClick(DialogInterface dialog, int whichButton) {
-                        //your deleting code
-                        deleteCategory(snapshot.getReference());
-                        dialog.dismiss();
-                    }
-
-                })
-
-                .setNegativeButton("Không", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-
-                        dialog.dismiss();
-                    }
-                })
-                .create();
-        return myDeleteDialogBox;
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        menu.clear();
-        inflater.inflate(R.menu.category_menu, menu);
-        super.onCreateOptionsMenu(menu, inflater);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle item selection
-
-        switch (item.getItemId()) {
-            case R.id.action_add_category:
-                addFragment.setTargetFragment(this, REQUEST_CODE);
-                addFragment.show(getFragmentManager(), AddCategoryFragment.TAG);
-                return true;
-            default:
-                return false;
-        }
-    }
-
-
-    private Task<Void> deleteCategory(final DocumentReference categoryRef) {
-
-        // In a transaction, add the new rating and update the aggregate totals
-        return mFirestore.runTransaction(new Transaction.Function<Void>() {
-            @Override
-            public Void apply(Transaction transaction) throws FirebaseFirestoreException {
-
-                // Commit to Firestore
-                transaction.delete(categoryRef);
-                return null;
-            }
-        });
-    }
-
-
-    private Task<Void> addCategory(final Category category) {
-        final DocumentReference categoryRef = mFirestore.collection("categories").document();
-        // In a transaction, add the new rating and update the aggregate totals
-        return mFirestore.runTransaction(new Transaction.Function<Void>() {
-            @Override
-            public Void apply(Transaction transaction) throws FirebaseFirestoreException {
-
-                // Commit to Firestore
-                transaction.set(categoryRef, category);
-                return null;
-            }
-        });
-    }
-
-    @Override
-    public void OnAddCategory(Category category) {
-
-        addCategory(category).addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                Log.d(TAG, "Category added");
-
-                // Hide keyboard and scroll to top
-                KeyboardUtils.hideKeyboard(getActivity());
-                recyclerViewCategory.smoothScrollToPosition(0);
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Log.w(TAG, "Add category failed", e);
-
-                // Show failure message and hide keyboard
-                KeyboardUtils.hideKeyboard(getActivity());
-                Snackbar.make(getActivity().findViewById(android.R.id.content), "Đã có lỗi xảy ra!",
-                        Snackbar.LENGTH_SHORT).show();
-            }
-        });
-    }
 }

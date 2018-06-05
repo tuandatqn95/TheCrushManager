@@ -11,17 +11,18 @@ public class MainDrink implements Serializable {
     private String name;
     private long price;
     private String imageURL;
+    private long rating;
 
 
     public MainDrink() {
     }
 
-    public MainDrink(String name, long price, String imageURL ) {
+    public MainDrink(String name, long price, String imageURL, long rating) {
 
         this.name = name;
         this.price = price;
         this.imageURL = imageURL;
-
+        this.rating = rating;
     }
 
     public String getName() {
@@ -48,5 +49,11 @@ public class MainDrink implements Serializable {
         this.imageURL = imageURL;
     }
 
+    public long getRating() {
+        return rating;
+    }
 
+    public void setRating(long rating) {
+        this.rating = rating;
+    }
 }

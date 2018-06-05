@@ -4,19 +4,28 @@ package com.crush.thecrushmanager.dialog;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.crush.thecrushmanager.R;
 import com.crush.thecrushmanager.model.MainDrink;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Transaction;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -29,13 +38,6 @@ public class AddDrinkFragment extends AddDialogFragment {
 
     public static final String TAG = "AddDrinkFragment";
 
-    public interface OnSavingListener {
-        void OnAddDrink(MainDrink drink);
-
-        void OnUpdateDrink(DocumentReference reference, MainDrink drink);
-    }
-
-    private OnSavingListener mListener;
 
     @BindView(R.id.drink_form_name)
     TextView drinkName;
@@ -45,12 +47,16 @@ public class AddDrinkFragment extends AddDialogFragment {
 
     @BindView(R.id.drink_form_image)
     ImageView drinkImage;
+    private FirebaseFirestore mFirestore;
+    private DocumentReference mCategoryRef;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_add_drink, container, false);
         ButterKnife.bind(this, rootView);
+
+        mFirestore = FirebaseFirestore.getInstance();
 
         Bundle args = getArguments();
         if (args != null) {
@@ -61,8 +67,8 @@ public class AddDrinkFragment extends AddDialogFragment {
 
         if (mSnapshot != null) {
             MainDrink drink = mSnapshot.toObject(MainDrink.class);
-            mImageURL = Uri.parse(drink.getImageURL());
-            Glide.with(drinkImage.getContext()).load(mImageURL).into(drinkImage);
+            mImageURL = Uri.parse(drink.getImageURL() + "");
+            Glide.with(drinkImage.getContext()).load(mImageURL).placeholder(R.drawable.default_drink).error(R.drawable.default_drink).into(drinkImage);
             drinkName.setText(drink.getName());
             drinkPrice.setText(drink.getPrice() + "");
         }
@@ -70,23 +76,25 @@ public class AddDrinkFragment extends AddDialogFragment {
         return rootView;
     }
 
-    public static AddDrinkFragment newInstance() {
+    public static AddDrinkFragment newInstance(DocumentReference categoryRef) {
         AddDrinkFragment fragment = new AddDrinkFragment();
         Bundle args = new Bundle();
         args.putString(FRAGMENT_TITLE, "Add Drink");
         args.putSerializable(FRAGMENT_ACTION, FORM_ACTION.ADD);
         args.putSerializable(FRAGMENT_OBJECT, FORM_OBJECT.DRINK);
+        fragment.setCategoryRef(categoryRef);
         fragment.setArguments(args);
         return fragment;
     }
 
-    public static AddDrinkFragment newInstance(DocumentSnapshot snapshot) {
+    public static AddDrinkFragment newInstance(DocumentReference categoryRef, DocumentSnapshot snapshot) {
         AddDrinkFragment fragment = new AddDrinkFragment();
         Bundle args = new Bundle();
         args.putString(FRAGMENT_TITLE, "Modify Drink");
         args.putSerializable(FRAGMENT_ACTION, FORM_ACTION.UPDATE);
         args.putSerializable(FRAGMENT_OBJECT, FORM_OBJECT.DRINK);
         fragment.setSnapshot(snapshot);
+        fragment.setCategoryRef(categoryRef);
         fragment.setArguments(args);
         return fragment;
     }
@@ -94,7 +102,6 @@ public class AddDrinkFragment extends AddDialogFragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        this.mListener = (OnSavingListener) context;
     }
 
     @OnClick(R.id.drink_form_choose_btn)
@@ -109,23 +116,74 @@ public class AddDrinkFragment extends AddDialogFragment {
 
     @OnClick(R.id.drink_form_button)
     void onDrinkFormSubmit(View view) {
-        Log.d(TAG, "onDrinkFormSubmit: " + mListener);
+        if (TextUtils.isEmpty(drinkName.getText().toString())) {
+            Toast.makeText(getContext(), "Please fill Drink's name!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        MainDrink drink = new MainDrink(drinkName.getText().toString(), Long.valueOf("0" + drinkPrice.getText()), mImageURL + "", 0);
+
         switch (mAction) {
             case ADD:
-                MainDrink drink = new MainDrink(drinkName.getText().toString(), Long.valueOf(drinkPrice.getText().toString()), mImageURL.toString());
-
-                if (mListener != null)
-                    mListener.OnAddDrink(drink);
+                OnSaveDrink(mCategoryRef, drink, null);
                 break;
             case UPDATE:
-
+                OnSaveDrink(mCategoryRef, drink, mSnapshot.getReference());
                 break;
         }
         dismiss();
     }
 
+
+    public void OnSaveDrink(DocumentReference categoryRef, MainDrink drink, DocumentReference drinkRef) {
+
+        saveDrink(categoryRef, drink, drinkRef).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Log.d(TAG, "Drink added");
+
+
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.w(TAG, "Add drink failed", e);
+
+
+            }
+        });
+    }
+
+
+    public void OnUpdateDrink(DocumentReference reference, MainDrink drink) {
+
+    }
+
+    private Task<Void> saveDrink(DocumentReference mCategoryRef, final MainDrink drink, DocumentReference ref) {
+        // Create reference for new rating, for use inside the transaction
+        final DocumentReference drinkRef;
+        if (ref == null)
+            drinkRef = mCategoryRef.collection("maindrinks").document();
+        else
+            drinkRef = ref;
+
+        // In a transaction, add the new rating and update the aggregate totals
+        return mFirestore.runTransaction(new Transaction.Function<Void>() {
+            @Override
+            public Void apply(Transaction transaction) throws FirebaseFirestoreException {
+
+                // Commit to Firestore
+                transaction.set(drinkRef, drink);
+                return null;
+            }
+        });
+    }
+
     @Override
     protected void loadImage() {
-        Glide.with(drinkImage.getContext()).load(mFileUri).into(drinkImage);
+        Glide.with(drinkImage.getContext()).load(mFileUri).placeholder(R.drawable.default_drink).error(R.drawable.default_drink).into(drinkImage);
+    }
+
+    public void setCategoryRef(DocumentReference categoryRef) {
+        this.mCategoryRef = categoryRef;
     }
 }

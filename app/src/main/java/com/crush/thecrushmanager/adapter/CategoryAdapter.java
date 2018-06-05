@@ -11,16 +11,10 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.crush.thecrushmanager.R;
 import com.crush.thecrushmanager.model.Category;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
-
-import org.w3c.dom.Text;
-
-import javax.annotation.Nullable;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -33,7 +27,7 @@ public class CategoryAdapter extends FirestoreAdapter<CategoryAdapter.ViewHolder
 
     public interface OnCategorySelectedListener {
         void OnCategorySelected(DocumentSnapshot snapshot);
-        void OnDeleting(DocumentSnapshot snapshot);
+
     }
 
     private OnCategorySelectedListener mListener;
@@ -55,7 +49,7 @@ public class CategoryAdapter extends FirestoreAdapter<CategoryAdapter.ViewHolder
         holder.bind(getSnapshot(position), mListener);
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.category_item_image)
         ImageView categoryImage;
@@ -66,9 +60,7 @@ public class CategoryAdapter extends FirestoreAdapter<CategoryAdapter.ViewHolder
         @BindView(R.id.quantity_text)
         TextView drinkQuantity;
 
-        @BindView(R.id.category_item_delete)
-        ImageView btnDelete;
-
+     
         DrinkAdapter drinkAdapter;
 
 
@@ -86,7 +78,7 @@ public class CategoryAdapter extends FirestoreAdapter<CategoryAdapter.ViewHolder
                     @Override
                     public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
                         super.onEvent(documentSnapshots, e);
-                        drinkQuantity.setText("Số lượng: " + documentSnapshots.size());
+                        drinkQuantity.setText("Quantity: " + documentSnapshots.size());
                     }
                 };
             drinkAdapter.setQuery(snapshot.getReference().collection("maindrinks"));
@@ -96,13 +88,6 @@ public class CategoryAdapter extends FirestoreAdapter<CategoryAdapter.ViewHolder
             Glide.with(categoryImage.getContext()).load(category.getImageURL()).into(categoryImage);
             categoryName.setText(category.getName());
 
-            btnDelete.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if (mListener != null)
-                        mListener.OnDeleting(snapshot);
-                }
-            });
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override

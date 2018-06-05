@@ -4,19 +4,26 @@ import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
 import com.crush.thecrushmanager.R;
+import com.crush.thecrushmanager.model.Customer;
 import com.crush.thecrushmanager.model.Order;
+import com.crush.thecrushmanager.model.Status;
+import com.crush.thecrushmanager.util.StringFormatUtils;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
-import java.util.Date;
+import org.ocpsoft.prettytime.PrettyTime;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -27,8 +34,10 @@ import butterknife.ButterKnife;
 
 public class OrderAdapter extends FirestoreAdapter<OrderAdapter.ViewHolder> {
 
-    public interface OnOrderSelectedListener {
+    private static final String TAG = "OrderAdapter";
 
+    public interface OnOrderSelectedListener {
+        void OnOrderSelected(DocumentSnapshot snapshot);
     }
 
     private OnOrderSelectedListener mListener;
@@ -36,6 +45,7 @@ public class OrderAdapter extends FirestoreAdapter<OrderAdapter.ViewHolder> {
     public OrderAdapter(Query query, OnOrderSelectedListener listener) {
         super(query);
         this.mListener = listener;
+
     }
 
     @NonNull
@@ -50,7 +60,7 @@ public class OrderAdapter extends FirestoreAdapter<OrderAdapter.ViewHolder> {
         holder.bind(getSnapshot(position), mListener);
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    static class ViewHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.order_item_image)
         ImageView customerImage;
@@ -68,6 +78,8 @@ public class OrderAdapter extends FirestoreAdapter<OrderAdapter.ViewHolder> {
         TextView statusName;
 
         GradientDrawable statusBackground;
+        private FirebaseFirestore mFirestore;
+        private  PrettyTime prettyTime = new PrettyTime();
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -78,20 +90,55 @@ public class OrderAdapter extends FirestoreAdapter<OrderAdapter.ViewHolder> {
             statusBackground.setCornerRadius(15.0f);
 //            statusBackground.setStroke(2, Color.BLACK);
             statusName.setBackground(statusBackground);
-
+            mFirestore = FirebaseFirestore.getInstance();
         }
 
-        public void bind(DocumentSnapshot snapshot, OnOrderSelectedListener mListener) {
+        public void bind(final DocumentSnapshot snapshot, final OnOrderSelectedListener mListener) {
             Order order = snapshot.toObject(Order.class);
-            Glide.with(customerImage.getContext()).load(order.getImageURL()).into(customerImage);
 
-            customerName.setText(order.getName());
-            lastModified.setText(new Date().getTime() + "");
-            orderPrice.setText("50.000");
-            statusName.setText("Đã thanh toán");
-            statusBackground.setColor(Color.RED);
+            lastModified.setText(prettyTime.format(order.getCreateOn()));
+            orderPrice.setText(StringFormatUtils.FormatCurrency(order.getTotalPrice()));
+
+            //Load customer info
+            mFirestore.collection("customers").document(order.getUserId()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                @Override
+                public void onSuccess(DocumentSnapshot snapshot) {
+                    Log.d(TAG, "onSuccess: customer - " + snapshot);
+                    Customer customer = snapshot.toObject(Customer.class);
+//                    Glide.with(customerImage.getContext()).load(customer.getImageURL()).into(customerImage);
+                    customerName.setText(customer.getName());
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    customerName.setText("#Error!");
+                }
+            });
+            Log.d(TAG, "bind: order - " + snapshot);
+            mFirestore.collection("statuses").document(order.getStatus()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                @Override
+                public void onSuccess(DocumentSnapshot snapshot) {
+                    Log.d(TAG, "onSuccess: status - " + snapshot);
+                    Status status = snapshot.toObject(Status.class);
+                    statusName.setText(status.getName());
+                    statusBackground.setColor(Color.RED);
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    statusName.setText("Unknown");
+                    statusBackground.setColor(Color.GRAY);
+                }
+            });
 
 
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (mListener != null)
+                        mListener.OnOrderSelected(snapshot);
+                }
+            });
         }
     }
 }

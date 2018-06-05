@@ -22,9 +22,11 @@
             </intent-filter>
         </activity>
         <activity android:name=".activity.CategoryDetailActivity" />
-        <activity android:name=".activity.TempActivity"></activity>
+        <activity android:name=".activity.TempActivity" />
 
         <service android:name=".service.MyUploadService" />
+
+        <activity android:name=".activity.OrderDetailActivity"></activity>
     </application>
 
 </manifest>

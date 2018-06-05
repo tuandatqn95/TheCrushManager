@@ -13,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:hint="Tên thức uống"
+        android:hint="Name"
         android:maxLines="1" />
 
     <EditText
@@ -22,7 +22,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:digits="0123456789"
-        android:hint="Giá thức uống"
+        android:hint="Price"
         android:inputType="numberDecimal"
         android:maxLines="1" />
 
@@ -34,7 +34,7 @@
         android:layout_margin="25dp"
         android:background="@android:drawable/dialog_holo_light_frame"
         android:scaleType="centerCrop"
-        android:src="@drawable/milktea_thumbail" />
+        android:src="@drawable/default_drink" />
 
     <Button
         android:id="@+id/drink_form_choose_btn"
@@ -61,7 +61,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Hủy"
+            android:text="Cancel"
             android:textColor="@color/greySecondary"
             android:theme="@style/ThemeOverlay.FilterButton" />
 
@@ -71,7 +71,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Lưu"
+            android:text="Save"
             android:theme="@style/ThemeOverlay.FilterButton" />
 
     </LinearLayout>

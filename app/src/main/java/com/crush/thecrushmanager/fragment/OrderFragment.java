@@ -46,7 +46,7 @@ public class OrderFragment extends Fragment {
         ButterKnife.bind(this, rootView);
 
         mFirestore = FirebaseFirestore.getInstance();
-        mQuery = mFirestore.collection("statuses");
+        mQuery = mFirestore.collection("statuses").orderBy("order");
         mAdapter = new StatusFragmentAdapter(getFragmentManager(), mQuery);
         viewPager.setAdapter(mAdapter);
         tabLayout.setupWithViewPager(viewPager);

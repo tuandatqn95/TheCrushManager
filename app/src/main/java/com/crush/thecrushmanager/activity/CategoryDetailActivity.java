@@ -1,24 +1,30 @@
 package com.crush.thecrushmanager.activity;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.ContextMenu;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.crush.thecrushmanager.R;
 import com.crush.thecrushmanager.adapter.DrinkAdapter;
+import com.crush.thecrushmanager.dialog.AddCategoryFragment;
 import com.crush.thecrushmanager.dialog.AddDrinkFragment;
 import com.crush.thecrushmanager.model.Category;
 import com.crush.thecrushmanager.model.MainDrink;
-import com.crush.thecrushmanager.util.KeyboardUtils;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -39,7 +45,7 @@ import butterknife.OnClick;
 
 
 public class CategoryDetailActivity extends AppCompatActivity implements EventListener<DocumentSnapshot>,
-        AddDrinkFragment.OnSavingListener {
+        PopupMenu.OnMenuItemClickListener {
 
 
     private static final String TAG = "CategoryDetailActivity";
@@ -48,10 +54,8 @@ public class CategoryDetailActivity extends AppCompatActivity implements EventLi
     @BindView(R.id.category_image)
     ImageView categoryTopCard;
 
-
     @BindView(R.id.category_name)
     TextView categoryName;
-
 
     @BindView(R.id.recycler_drinks)
     RecyclerView recyclerDrinks;
@@ -60,9 +64,10 @@ public class CategoryDetailActivity extends AppCompatActivity implements EventLi
     private DocumentReference mCategoryRef;
     private ListenerRegistration mCategoryRegistration;
     private DrinkAdapter mAdapter;
-
+    private DocumentSnapshot mSnapshot;
     private AddDrinkFragment addDrinkFragment;
-
+    private AddDrinkFragment editDrinkFragment;
+    private AddCategoryFragment editCategoryFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,20 +95,29 @@ public class CategoryDetailActivity extends AppCompatActivity implements EventLi
         recyclerDrinks.addItemDecoration(new DividerItemDecoration(recyclerDrinks.getContext(), DividerItemDecoration.VERTICAL));
         recyclerDrinks.setAdapter(mAdapter);
 
-        addDrinkFragment = AddDrinkFragment.newInstance();
+
+        registerForContextMenu(recyclerDrinks);
+
 
     }
 
     private void onCategoryLoaded(Category category) {
-        categoryName.setText(category.getName());
 
+        if (category == null)
+            return;
+
+        categoryName.setText(category.getName());
 
         // Background image
         Glide.with(categoryTopCard.getContext())
                 .load(category.getImageURL())
                 .into(categoryTopCard);
+    }
 
-
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
     }
 
     @Override
@@ -142,53 +156,158 @@ public class CategoryDetailActivity extends AppCompatActivity implements EventLi
             return;
         }
 
+        this.mSnapshot = snapshot;
 
+        editCategoryFragment = AddCategoryFragment.newInstance(mSnapshot);
         onCategoryLoaded(snapshot.toObject(Category.class));
     }
 
     @OnClick(R.id.category_button_back)
-    public void onBackArrowClicked(View view) {
+    public void onBackArrowClick(View view) {
         onBackPressed();
     }
 
     @OnClick(R.id.fab_add_drink_dialog)
     public void onAddDrinkClicked(View view) {
+        addDrinkFragment = AddDrinkFragment.newInstance(mCategoryRef);
         addDrinkFragment.show(getSupportFragmentManager(), AddDrinkFragment.TAG);
     }
 
-    @Override
-    public void OnAddDrink(MainDrink drink) {
+    @OnClick(R.id.category_button_edit)
+    public void onEditCategoryClick(View view) {
 
-        addDrink(mCategoryRef, drink).addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                Log.d(TAG, "Drink added");
+        PopupMenu popup = new PopupMenu(this, view);
 
-                // Hide keyboard and scroll to top
-                KeyboardUtils.hideKeyboard(CategoryDetailActivity.this);
-                recyclerDrinks.smoothScrollToPosition(0);
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Log.w(TAG, "Add drink failed", e);
+        // This activity implements OnMenuItemClickListener
+        popup.setOnMenuItemClickListener(this);
+        popup.inflate(R.menu.category_modify_menu);
+        popup.show();
 
-                // Show failure message and hide keyboard
-                KeyboardUtils.hideKeyboard(CategoryDetailActivity.this);
-                Snackbar.make(findViewById(android.R.id.content), "Đã có lỗi xảy ra!",
-                        Snackbar.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    @Override
-    public void OnUpdateDrink(DocumentReference reference, MainDrink drink) {
 
     }
 
-    private Task<Void> addDrink(DocumentReference mCategoryRef, final MainDrink drink) {
-        // Create reference for new rating, for use inside the transaction
-        final DocumentReference drinkRef = mCategoryRef.collection("maindrinks").document();
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        int id = item.getItemId();
+
+        switch (id) {
+            case R.id.action_edit_category:
+                editCategoryFragment.show(getSupportFragmentManager(), AddCategoryFragment.TAG);
+                return true;
+            case R.id.action_delete_category:
+                AlertDialog diaBox = ConfirmCategoryDeleteAction(mSnapshot);
+                diaBox.show();
+                return true;
+            default:
+                return false;
+        }
+
+    }
+
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        getMenuInflater().inflate(R.menu.drink_modify_menu, menu);
+        menu.setHeaderTitle("Drink");
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+
+        DrinkAdapter.RecyclerViewMenuContextInfo info = mAdapter.getMenuInfo();
+        DocumentSnapshot drinkSnapshot = mAdapter.getItem(info.position);
+        switch (item.getItemId()) {
+            case R.id.action_edit_drink:
+                editDrinkFragment = AddDrinkFragment.newInstance(mCategoryRef, drinkSnapshot);
+                editDrinkFragment.show(getSupportFragmentManager(), AddDrinkFragment.TAG);
+                break;
+            case R.id.action_delete_drink:
+                AlertDialog diaBox = ConfirmDrinkDeleteAction(drinkSnapshot);
+                diaBox.show();
+                break;
+        }
+        return super.onContextItemSelected(item);
+    }
+
+
+    private AlertDialog ConfirmCategoryDeleteAction(final DocumentSnapshot snapshot) {
+        Category category = snapshot.toObject(Category.class);
+        AlertDialog myDeleteDialogBox = new AlertDialog.Builder(this)
+                //set message, title, and icon
+                .setTitle("Delete")
+                .setMessage("Are you sure you want to delete category '" + category.getName() + "'?")
+                .setIcon(R.drawable.ic_recyclebin)
+
+                .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+
+                    public void onClick(final DialogInterface dialog, int whichButton) {
+                        //your deleting code
+                        deleteCategory(snapshot.getReference()).addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                Toast.makeText(CategoryDetailActivity.this, "Delete category success!", Toast.LENGTH_SHORT).show();
+                                finish();
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Toast.makeText(CategoryDetailActivity.this, "Delete category failure!", Toast.LENGTH_SHORT).show();
+
+                            }
+                        });
+                        dialog.dismiss();
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                })
+                .create();
+        return myDeleteDialogBox;
+    }
+
+    private AlertDialog ConfirmDrinkDeleteAction(final DocumentSnapshot snapshot) {
+        MainDrink drink = snapshot.toObject(MainDrink.class);
+        AlertDialog myDeleteDialogBox = new AlertDialog.Builder(this)
+                //set message, title, and icon
+                .setTitle("Delete")
+                .setMessage("Are you sure you want to delete drink '" + drink.getName() + "'?")
+                .setIcon(R.drawable.ic_recyclebin)
+
+                .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+
+                    public void onClick(final DialogInterface dialog, int whichButton) {
+                        //your deleting code
+                        deleteDrink(snapshot.getReference()).addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                Toast.makeText(CategoryDetailActivity.this, "Delete drink success!", Toast.LENGTH_SHORT).show();
+
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Toast.makeText(CategoryDetailActivity.this, "Delete drink failure!", Toast.LENGTH_SHORT).show();
+
+                            }
+                        });
+                        dialog.dismiss();
+
+                    }
+
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                })
+                .create();
+        return myDeleteDialogBox;
+    }
+
+    private Task<Void> deleteCategory(final DocumentReference categoryRef) {
 
         // In a transaction, add the new rating and update the aggregate totals
         return mFirestore.runTransaction(new Transaction.Function<Void>() {
@@ -196,10 +315,24 @@ public class CategoryDetailActivity extends AppCompatActivity implements EventLi
             public Void apply(Transaction transaction) throws FirebaseFirestoreException {
 
                 // Commit to Firestore
-                transaction.set(drinkRef, drink);
-
+                transaction.delete(categoryRef);
                 return null;
             }
         });
     }
+
+    private Task<Void> deleteDrink(final DocumentReference drinkRef) {
+
+        // In a transaction, add the new rating and update the aggregate totals
+        return mFirestore.runTransaction(new Transaction.Function<Void>() {
+            @Override
+            public Void apply(Transaction transaction) throws FirebaseFirestoreException {
+
+                // Commit to Firestore
+                transaction.delete(drinkRef);
+                return null;
+            }
+        });
+    }
+
 }

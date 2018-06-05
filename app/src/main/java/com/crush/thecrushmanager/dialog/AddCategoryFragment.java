@@ -3,7 +3,9 @@ package com.crush.thecrushmanager.dialog;
 
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,8 +15,14 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.crush.thecrushmanager.R;
 import com.crush.thecrushmanager.model.Category;
-import com.crush.thecrushmanager.model.Topping;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Transaction;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -26,13 +34,7 @@ import butterknife.OnClick;
 public class AddCategoryFragment extends AddDialogFragment {
 
     public static final String TAG = "AddCategoryFragment";
-
-
-    public interface OnSavingListener {
-        void OnAddCategory(Category category);
-    }
-
-    private OnSavingListener mListener;
+    private FirebaseFirestore mFirestore;
 
     @BindView(R.id.category_form_name)
     TextView categoryName;
@@ -46,7 +48,7 @@ public class AddCategoryFragment extends AddDialogFragment {
         View rootView = inflater.inflate(R.layout.fragment_add_category, container, false);
         ButterKnife.bind(this, rootView);
 
-        mListener = (OnSavingListener) getTargetFragment();
+        mFirestore = FirebaseFirestore.getInstance();
 
         Bundle args = getArguments();
         if (args != null) {
@@ -98,26 +100,66 @@ public class AddCategoryFragment extends AddDialogFragment {
 
     @OnClick(R.id.category_form_button)
     void onCategoryFormSubmit(View view) {
-
+        Category category = new Category(categoryName.getText().toString(), mImageURL + "");
         switch (mAction) {
             case ADD:
-                Category category = new Category(categoryName.getText().toString(), "");
-
-                if (mListener != null)
-                    mListener.OnAddCategory(category);
+                OnSaveCategory(category, null);
                 break;
             case UPDATE:
-
+                OnSaveCategory(category, mSnapshot.getReference());
                 break;
         }
         dismiss();
     }
 
+
     @Override
     protected void loadImage() {
         Glide.with(categoryImage.getContext()).load(mFileUri).into(categoryImage);
-
     }
 
 
+    public void OnSaveCategory(Category category, DocumentReference reference) {
+
+        saveCategory(category, reference).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Log.d(TAG, "Category added");
+
+                // Hide keyboard and scroll to top
+//                KeyboardUtils.hideKeyboard(getActivity());
+
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.w(TAG, "Add category failed", e);
+
+                // Show failure message and hide keyboard
+//                KeyboardUtils.hideKeyboard(getActivity());
+//                Snackbar.make(getActivity().findViewById(android.R.id.content), "Đã có lỗi xảy ra!",
+//                        Snackbar.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+
+    private Task<Void> saveCategory(final Category category, final DocumentReference ref) {
+        final DocumentReference categoryRef;
+        if (ref == null)
+            categoryRef = mFirestore.collection("categories").document();
+        else
+            categoryRef = ref;
+
+        // In a transaction, add the new rating and update the aggregate totals
+        return mFirestore.runTransaction(new Transaction.Function<Void>() {
+            @Override
+            public Void apply(Transaction transaction) throws FirebaseFirestoreException {
+
+                // Commit to Firestore
+                transaction.set(categoryRef, category);
+                return null;
+            }
+        });
+    }
 }

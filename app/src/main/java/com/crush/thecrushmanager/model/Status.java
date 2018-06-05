@@ -10,16 +10,19 @@ public class Status implements Serializable {
 
 
     public static final String KEY_STATUS_NAME = "name";
-    private String id;
-    private String name;
 
+    private String name;
+    private String color;
 
     public Status() {
     }
 
-    public Status(String name) {
+    public Status(String name, String color) {
+
         this.name = name;
+        this.color = color;
     }
+
 
     public String getName() {
         return name;
@@ -29,11 +32,11 @@ public class Status implements Serializable {
         this.name = name;
     }
 
-    public String getId() {
-        return id;
+    public String getColor() {
+        return color;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setColor(String color) {
+        this.color = color;
     }
 }

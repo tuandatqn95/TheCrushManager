@@ -5,7 +5,7 @@ import android.arch.lifecycle.ViewModel;
 public class MainActivityViewModel extends ViewModel {
     private boolean mIsSigningIn;
 
-    public MainActivityViewModel( ) {
+    public MainActivityViewModel() {
         this.mIsSigningIn = false;
     }
 
