@@ -18,7 +18,6 @@ import com.crush.thecrushmanager.model.Status;
 import com.crush.thecrushmanager.util.StringFormatUtils;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
@@ -79,7 +78,7 @@ public class OrderAdapter extends FirestoreAdapter<OrderAdapter.ViewHolder> {
 
         GradientDrawable statusBackground;
         private FirebaseFirestore mFirestore;
-        private  PrettyTime prettyTime = new PrettyTime();
+        private PrettyTime prettyTime = new PrettyTime();
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -98,6 +97,7 @@ public class OrderAdapter extends FirestoreAdapter<OrderAdapter.ViewHolder> {
 
             lastModified.setText(prettyTime.format(order.getCreateOn()));
             orderPrice.setText(StringFormatUtils.FormatCurrency(order.getTotalPrice()));
+            statusName.setText(order.getStatus());
 
             //Load customer info
             mFirestore.collection("customers").document(order.getUserId()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -114,20 +114,13 @@ public class OrderAdapter extends FirestoreAdapter<OrderAdapter.ViewHolder> {
                     customerName.setText("#Error!");
                 }
             });
-            Log.d(TAG, "bind: order - " + snapshot);
+
             mFirestore.collection("statuses").document(order.getStatus()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                 @Override
                 public void onSuccess(DocumentSnapshot snapshot) {
                     Log.d(TAG, "onSuccess: status - " + snapshot);
                     Status status = snapshot.toObject(Status.class);
-                    statusName.setText(status.getName());
-                    statusBackground.setColor(Color.RED);
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    statusName.setText("Unknown");
-                    statusBackground.setColor(Color.GRAY);
+                    statusBackground.setColor(Color.parseColor(status.getColor()));
                 }
             });
 

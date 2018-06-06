@@ -85,7 +85,7 @@ public class CategoryAdapter extends FirestoreAdapter<CategoryAdapter.ViewHolder
             drinkAdapter.startListening();
 
 
-            Glide.with(categoryImage.getContext()).load(category.getImageURL()).into(categoryImage);
+            Glide.with(categoryImage.getContext()).load(category.getImageURL()).dontAnimate().into(categoryImage);
             categoryName.setText(category.getName());
 
 

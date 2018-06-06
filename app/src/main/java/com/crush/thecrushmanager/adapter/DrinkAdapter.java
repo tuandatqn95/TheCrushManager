@@ -76,7 +76,7 @@ public class DrinkAdapter extends FirestoreAdapter<DrinkAdapter.ViewHolder> {
 
         public void bind(DocumentSnapshot snapshot, final int position, final RecyclerViewMenuContextInfo mMenuInfo) {
             MainDrink drink = snapshot.toObject(MainDrink.class);
-            Glide.with(drinkImage.getContext()).load(drink.getImageURL()).placeholder(R.drawable.default_drink).error(R.drawable.default_drink).into(drinkImage);
+            Glide.with(drinkImage.getContext()).load(drink.getImageURL()).dontAnimate().placeholder(R.drawable.default_drink).error(R.drawable.default_drink).into(drinkImage);
             drinkName.setText(drink.getName());
             drinkPrice.setText(StringFormatUtils.FormatCurrency(drink.getPrice()));
             ratingBar.setRating(drink.getRating());

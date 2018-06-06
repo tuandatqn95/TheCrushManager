@@ -6,6 +6,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.MenuItem;
 
 import com.crush.thecrushmanager.R;
 import com.crush.thecrushmanager.adapter.OrderDetailAdapter;
@@ -47,7 +48,6 @@ public class OrderDetailActivity extends AppCompatActivity implements EventListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_order_detail);
         Toolbar toolbar = (Toolbar) findViewById(R.id.order_detail_toolbar);
-
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
@@ -55,6 +55,7 @@ public class OrderDetailActivity extends AppCompatActivity implements EventListe
         ButterKnife.bind(this);
 
         mOrderId = getIntent().getStringExtra(KEY_ORDER_ID);
+        getSupportActionBar().setTitle(mOrderId);
 
         mFirestore = FirebaseFirestore.getInstance();
         mOrderRef = mFirestore.collection("orders").document(mOrderId);
@@ -79,6 +80,18 @@ public class OrderDetailActivity extends AppCompatActivity implements EventListe
     }
 
     @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        Log.d(TAG, "onOptionsItemSelected: " + item.getItemId());
+        switch (item.getItemId()) {
+            case 16908332:
+                onBackPressed();
+                break;
+
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     public void onEvent(@Nullable DocumentSnapshot snapshot, @Nullable FirebaseFirestoreException e) {
         if (e != null) {
             return;
@@ -88,7 +101,8 @@ public class OrderDetailActivity extends AppCompatActivity implements EventListe
 
     private void onOrderLoaded(DocumentSnapshot snapshot) {
         Order order = snapshot.toObject(Order.class);
-//        getSupportActionBar().setTitle(order.getName());
+
+
         OrderDetailAdapter adapter = new OrderDetailAdapter(getSupportFragmentManager(), snapshot);
         tabLayout.setupWithViewPager(viewPager);
         viewPager.setAdapter(adapter);

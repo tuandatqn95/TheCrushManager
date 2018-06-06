@@ -1,6 +1,10 @@
 package com.crush.thecrushmanager.adapter;
 
+import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.support.annotation.NonNull;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -10,6 +14,7 @@ import android.widget.TextView;
 
 import com.crush.thecrushmanager.R;
 import com.crush.thecrushmanager.model.OrderItem;
+import com.crush.thecrushmanager.util.StringFormatUtils;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.Query;
 
@@ -54,18 +59,26 @@ public class BillingAdapter extends FirestoreAdapter<BillingAdapter.ViewHolder> 
         public ViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+            GradientDrawable background = new GradientDrawable();
+            background.setShape(GradientDrawable.RECTANGLE);
+            background.setCornerRadius(25);
+            background.setStroke(1, Color.BLACK);
+
+            quantity.setBackground(background);
         }
 
         public void bind(DocumentSnapshot snapshot) {
 
             OrderItem orderItem = snapshot.toObject(OrderItem.class);
             Log.d(TAG, "bind: " + orderItem);
-            drinkName.setText(orderItem.getDrinkName());
+            drinkName.setText(orderItem.getMaindrink().getName());
             quantity.setText(orderItem.getQuantity() + "");
-            price.setText(orderItem.getDrinkPrice() * orderItem.getQuantity() + "");
+            price.setText(StringFormatUtils.FormatCurrency(orderItem.getPrice() * orderItem.getQuantity()));
 
-            BillingToppingAdapter adapter = new BillingToppingAdapter(orderItem.getToppings());
+            BillingToppingAdapter adapter = new BillingToppingAdapter(orderItem.getToppings(), orderItem.getQuantity());
             recyclerViewTopping.setAdapter(adapter);
+            recyclerViewTopping.setLayoutManager(new LinearLayoutManager(itemView.getContext()));
+            recyclerViewTopping.setItemAnimator(new DefaultItemAnimator());
         }
     }
 }

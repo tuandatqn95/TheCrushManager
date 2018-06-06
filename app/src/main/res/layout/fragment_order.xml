@@ -1,10 +1,12 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/order_fragment_swipe"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.crush.thecrushmanager.fragment.DashboardFragment">
+    tools:context="com.crush.thecrushmanager.fragment.OrderFragment">
+
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appbar"
@@ -17,17 +19,17 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="top"
-            android:background="#00a2ff"
+            android:background="@color/colorPrimary"
             app:tabIndicatorColor="@android:color/white"
             app:tabMode="scrollable"
             app:tabSelectedTextColor="@android:color/white"
-            app:tabTextColor="#d7d7d7">
-        </android.support.design.widget.TabLayout>
+            app:tabTextColor="#d7d7d7"></android.support.design.widget.TabLayout>
     </android.support.design.widget.AppBarLayout>
 
     <android.support.v4.view.ViewPager
         android:id="@+id/view_paper_order"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
+
 
 </LinearLayout>

@@ -1,48 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:paddingVertical="10dp"
+    android:paddingHorizontal="15dp"
     android:orientation="vertical">
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="10dp">
 
+    <LinearLayout
+        android:orientation="horizontal"
+        android:padding="5dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
         <TextView
             android:id="@+id/billing_item_quantity"
+            android:text="1"
+            android:gravity="center"
+            android:layout_marginHorizontal="5dp"
+            android:paddingHorizontal="5dp"
+            android:minWidth="20dp"
+            android:textColor="#000"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@android:color/black"
-
-            tools:hint="49" />
+            android:layout_height="wrap_content" />
 
         <TextView
             android:id="@+id/billing_item_drink_name"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:layout_toRightOf="@+id/billing_item_quantity"
-            android:textColor="@android:color/black"
-            tools:hint="Drink Name" />
+            android:layout_weight="2"
+            android:text="Tra sua"
+            android:padding="5dp"
+            android:textColor="#000"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
 
         <TextView
             android:id="@+id/billing_item_price"
+            android:text="20000"
+            android:layout_weight="1"
+            android:gravity="right"
+            android:padding="5dp"
+            android:textColor="#000"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:textColor="@android:color/black"
-            tools:hint="VND 16000" />
-    </RelativeLayout>
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/billing_item_topping_recyclerview"
+        android:layout_marginLeft="20dp"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:paddingLeft="35dp"
+        android:layout_height="wrap_content"
         tools:listitem="@layout/item_billing_topping_layout">
 
     </android.support.v7.widget.RecyclerView>
+
 
 </LinearLayout>

@@ -4,9 +4,12 @@ package com.crush.thecrushmanager.fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,13 +27,15 @@ import butterknife.ButterKnife;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class OrderTabFragment extends Fragment {
+public class OrderTabFragment extends Fragment implements OrderAdapter.OnOrderSelectedListener {
 
+    private static final String TAG = "OrderTabFragment";
 
     private static final String PARAM_STATUS_ID = "PARAM_STATUS_ID";
 
     @BindView(R.id.recycler_orders)
     RecyclerView recyclerOrder;
+
 
     private FirebaseFirestore mFirestore;
     private Query mQuery;
@@ -57,25 +62,24 @@ public class OrderTabFragment extends Fragment {
 
         mFirestore = FirebaseFirestore.getInstance();
         if (statusId.equals("ALL"))
-            mQuery = mFirestore.collection("orders");
+            mQuery = mFirestore.collection("orders").orderBy("createOn", Query.Direction.DESCENDING);
         else
-            mQuery = mFirestore.collection("orders").whereEqualTo("status", statusId);
+            mQuery = mFirestore.collection("orders").whereEqualTo("status", statusId).orderBy("createOn", Query.Direction.DESCENDING);
 
 
-        mAdapter = new OrderAdapter(mQuery, new OrderAdapter.OnOrderSelectedListener() {
-
-            @Override
-            public void OnOrderSelected(DocumentSnapshot snapshot) {
-                Intent intent = new Intent(getActivity(), OrderDetailActivity.class);
-                intent.putExtra(OrderDetailActivity.KEY_ORDER_ID, snapshot.getId());
-                startActivity(intent);
-            }
-        });
+        mAdapter = new OrderAdapter(mQuery, this);
         recyclerOrder.setLayoutManager(new LinearLayoutManager(this.getContext()));
         recyclerOrder.addItemDecoration(new DividerItemDecoration(recyclerOrder.getContext(), DividerItemDecoration.VERTICAL));
         recyclerOrder.setAdapter(mAdapter);
 
         return rootView;
+    }
+
+    @Override
+    public void OnOrderSelected(DocumentSnapshot snapshot) {
+        Intent intent = new Intent(getActivity(), OrderDetailActivity.class);
+        intent.putExtra(OrderDetailActivity.KEY_ORDER_ID, snapshot.getId());
+        startActivity(intent);
     }
 
     @Override

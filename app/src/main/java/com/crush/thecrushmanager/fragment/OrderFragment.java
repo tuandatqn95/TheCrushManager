@@ -4,7 +4,9 @@ package com.crush.thecrushmanager.fragment;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,13 +22,15 @@ import butterknife.ButterKnife;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class OrderFragment extends Fragment {
+public class OrderFragment extends Fragment  {
 
     @BindView(R.id.tabLayout)
     TabLayout tabLayout;
 
     @BindView(R.id.view_paper_order)
     ViewPager viewPager;
+
+
 
     private FirebaseFirestore mFirestore;
     private Query mQuery;
@@ -47,7 +51,7 @@ public class OrderFragment extends Fragment {
 
         mFirestore = FirebaseFirestore.getInstance();
         mQuery = mFirestore.collection("statuses").orderBy("order");
-        mAdapter = new StatusFragmentAdapter(getFragmentManager(), mQuery);
+        mAdapter = new StatusFragmentAdapter(getChildFragmentManager(), mQuery);
         viewPager.setAdapter(mAdapter);
         tabLayout.setupWithViewPager(viewPager);
 
@@ -69,4 +73,6 @@ public class OrderFragment extends Fragment {
         if (mAdapter != null)
             mAdapter.stopListening();
     }
+
+
 }

@@ -3,31 +3,49 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@android:color/white"
     tools:context=".fragment.SettingFragment">
 
-    <RelativeLayout
+    <LinearLayout
         android:id="@+id/setting_header"
         android:layout_width="match_parent"
-        android:layout_height="180dp"
+        android:layout_height="160dp"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:gravity="bottom"
         android:background="@color/colorPrimary">
 
         <ImageView
-            android:id="@+id/setting_avatar"
-            android:layout_width="70dp"
-            android:layout_height="70dp"
-            android:layout_margin="20dp" />
+            android:id="@+id/menu_header_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="@dimen/nav_header_vertical_spacing"
+            app:srcCompat="@mipmap/ic_launcher_round" />
 
         <TextView
             android:id="@+id/setting_username"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="@dimen/nav_header_vertical_spacing"
+            android:text="Name"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+
+        <TextView
+            android:id="@+id/setting_phone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/setting_avatar"
-            android:hint="User's Name"
-            android:textColor="@android:color/white" />
+            android:text="+849888888"
+            />
 
-    </RelativeLayout>
-
+    </LinearLayout>
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="20dp"
+        android:layout_below="@+id/setting_header"
+        android:layout_above="@id/logout_btn"
+        android:src="@drawable/coming_soon" />
     <!-- <ListView
          android:id="@+id/setting_listview"
          android:layout_width="match_parent"
@@ -36,8 +54,9 @@
          android:layout_below="@id/setting_header"></ListView>-->
     <Button
         android:id="@+id/logout_btn"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
         android:layout_above="@+id/app_version"
         android:layout_marginBottom="10dp"
         android:text="Logout"></Button>
@@ -50,5 +69,6 @@
 
         android:gravity="center"
         android:text="@string/current_version"
+        android:padding="5dp"
         android:textColor="@android:color/black" />
 </RelativeLayout>

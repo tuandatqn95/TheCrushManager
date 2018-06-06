@@ -1,32 +1,40 @@
 package com.crush.thecrushmanager.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 public class OrderItem implements Serializable {
-    private String drinkName;
-    private long drinkPrice;
+    private MainDrink maindrink;
+    private List<Topping> toppings = new ArrayList<>();
     private long quantity;
     private long price;
-    private List<Topping> toppings;
+
 
     public OrderItem() {
     }
 
-    public String getDrinkName() {
-        return drinkName;
+    public OrderItem(MainDrink maindrink, List<Topping> toppings, long quantity, long price) {
+        this.maindrink = maindrink;
+        this.toppings = toppings;
+        this.quantity = quantity;
+        this.price = price;
     }
 
-    public void setDrinkName(String drinkName) {
-        this.drinkName = drinkName;
+    public MainDrink getMaindrink() {
+        return maindrink;
     }
 
-    public long getDrinkPrice() {
-        return drinkPrice;
+    public void setMaindrink(MainDrink maindrink) {
+        this.maindrink = maindrink;
     }
 
-    public void setDrinkPrice(long drinkPrice) {
-        this.drinkPrice = drinkPrice;
+    public List<Topping> getToppings() {
+        return toppings;
+    }
+
+    public void setToppings(List<Topping> toppings) {
+        this.toppings = toppings;
     }
 
     public long getQuantity() {
@@ -43,13 +51,5 @@ public class OrderItem implements Serializable {
 
     public void setPrice(long price) {
         this.price = price;
-    }
-
-    public List<Topping> getToppings() {
-        return toppings;
-    }
-
-    public void setToppings(List<Topping> toppings) {
-        this.toppings = toppings;
     }
 }

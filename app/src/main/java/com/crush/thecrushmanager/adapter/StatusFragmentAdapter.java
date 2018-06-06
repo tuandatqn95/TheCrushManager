@@ -4,9 +4,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.util.Log;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 
 import com.crush.thecrushmanager.fragment.OrderTabFragment;
 import com.crush.thecrushmanager.model.Status;
@@ -43,6 +40,7 @@ public class StatusFragmentAdapter extends FragmentPagerAdapter implements Event
 
     @Override
     public Fragment getItem(int position) {
+        Log.d(TAG, "getItem: " + position);
         return fragments.get(position);
     }
 
@@ -59,7 +57,7 @@ public class StatusFragmentAdapter extends FragmentPagerAdapter implements Event
 
     @Override
     public void onEvent(@Nullable QuerySnapshot documentSnapshots, @Nullable FirebaseFirestoreException e) {
-        Log.d(TAG,mSnapshots.size()+"");
+        Log.d(TAG, mSnapshots.size() + "");
         if (e != null) {
             Log.w(TAG, "onEvent:error", e);
             onError(e);

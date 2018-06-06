@@ -1,33 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<LinearLayout
+    android:orientation="horizontal"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:padding="5dp">
-
-
-    <TextView
-        android:id="@+id/billing_topping_item_quantity"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="@android:color/black"
-        tools:hint="49" />
+    android:padding="5dp"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <TextView
-        android:id="@+id/billing_topping_item_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="15dp"
-        android:layout_toRightOf="@id/billing_topping_item_quantity"
-        android:textColor="@android:color/black"
-        tools:hint="Topping name" />
+        android:paddingHorizontal="5dp"
+        android:textColor="#000"
+        android:text="+"/>
 
     <TextView
-        android:id="@+id/billing_topping_item_price"
+        android:id="@+id/orderitem_topping_quanlity"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:textColor="@android:color/black"
-        tools:hint="VND 4500" />
-</RelativeLayout>
+        android:minWidth="20dp"
+        android:layout_marginHorizontal="5dp"
+        android:paddingHorizontal="5dp"
+        android:gravity="center"
+        android:textColor="#000"
+        tools:hint="3"/>
+
+    <TextView
+        android:id="@+id/orderitem_topping_name"
+        android:layout_weight="2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="5dp"
+        android:textColor="#000"
+        tools:hint="topping"/>
+
+    <TextView
+        android:id="@+id/orderitem_topping_price"
+        android:layout_weight="1"
+        android:gravity="right"
+        android:padding="5dp"
+        android:textColor="#000"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        tools:hint="20000"/>
+
+</LinearLayout>

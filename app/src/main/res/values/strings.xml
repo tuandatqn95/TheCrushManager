@@ -11,4 +11,9 @@
     <string name="upload_success">Upload finished</string>
     <string name="upload_failure">Upload failed</string>
     <string name="current_version">Version 0.1</string>
+    <string name="title_sign_in_error">Signin error!</string>
+    <string name="option_retry">Retry</string>
+    <string name="option_exit">Exit</string>
+    <string name="message_no_network">No internet!</string>
+    <string name="message_unknown">Unknown error!</string>
 </resources>
